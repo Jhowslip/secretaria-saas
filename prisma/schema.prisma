@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company            Company?
+  professionals      Professional[]
+  services           Service[]
+  availabilityRules  AvailabilityRule[]
+  appointments       Appointment[]
+  automationSettings AutomationSettings?
+  workflowLogs       WorkflowLog[]
+  integrationConnections IntegrationConnection[]
+}
+
+model Company {
+  id            String   @id @default(cuid())
+  tenantId      String   @unique
+  name          String
+  segment       String?
+  phone         String?
+  whatsapp      String?
+  email         String?
+  address       String?
+  website       String?
+  assistantName String   @default("Maria")
+  assistantTone String   @default("profissional, simpática e objetiva")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Professional {
+  id                     String   @id @default(cuid())
+  tenantId               String
+  name                   String
+  specialty              String?
+  bio                    String?
+  defaultDurationMinutes Int      @default(40)
+  priceInCents           Int?
+  active                 Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  availabilityRules AvailabilityRule[]
+  appointments      Appointment[]
+}
+
+model Service {
+  id               String   @id @default(cuid())
+  tenantId         String
+  name             String
+  description      String?
+  durationMinutes  Int      @default(40)
+  priceInCents     Int?
+  preparationNotes String?
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+}
+
+model AvailabilityRule {
+  id             String   @id @default(cuid())
+  tenantId       String
+  professionalId String
+  weekday        Int
+  startTime      String
+  endTime        String
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id             String   @id @default(cuid())
+  tenantId       String
+  professionalId String?
+  serviceId      String?
+  patientName    String
+  patientPhone   String?
+  startAt        DateTime
+  endAt          DateTime
+  status         String   @default("SCHEDULED")
+  source         String   @default("manual")
+  googleEventId  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  professional Professional? @relation(fields: [professionalId], references: [id], onDelete: SetNull)
+  service      Service?      @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+}
+
+model AutomationSettings {
+  id                    String   @id @default(cuid())
+  tenantId              String   @unique
+  secretaryEnabled      Boolean  @default(false)
+  remindersEnabled      Boolean  @default(false)
+  leadRecoveryEnabled   Boolean  @default(false)
+  billingEnabled        Boolean  @default(false)
+  humanEscalationEnabled Boolean @default(true)
+  voiceCallEnabled      Boolean  @default(false)
+  audioResponseEnabled  Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model WorkflowLog {
+  id           String   @id @default(cuid())
+  tenantId     String
+  workflowName String
+  status       String
+  message      String?
+  executionId  String?
+  createdAt    DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model IntegrationConnection {
+  id          String   @id @default(cuid())
+  tenantId    String
+  provider    String
+  status      String   @default("DISCONNECTED")
+  accountName String?
+  externalId  String?
+  notes       String?
+  enabled     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, provider])
+}
