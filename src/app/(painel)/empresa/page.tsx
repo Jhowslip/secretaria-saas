@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { updateCompanyAction } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function EmpresaPage() {
   const tenant = await prisma.tenant.findUnique({
     where: {

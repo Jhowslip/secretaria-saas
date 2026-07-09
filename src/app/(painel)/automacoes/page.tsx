@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { updateAutomationSettingsAction } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 const automationItems = [
   {
     key: "secretaryEnabled",

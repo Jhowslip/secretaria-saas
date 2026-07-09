@@ -1,5 +1,7 @@
 const tenantSlug = "clinica-teste";
 
+export const dynamic = "force-dynamic";
+
 const endpoints = [
     {
         name: "Buscar configuração completa",

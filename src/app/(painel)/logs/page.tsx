@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { clearLogsAction } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",

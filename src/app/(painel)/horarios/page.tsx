@@ -6,6 +6,8 @@ import {
   updateAvailabilityRuleAction,
 } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 const weekdays = [
   { value: 0, label: "Domingo" },
   { value: 1, label: "Segunda-feira" },

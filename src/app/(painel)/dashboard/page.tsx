@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 function formatCurrency(valueInCents?: number | null) {
     if (!valueInCents) {
         return "Não informado";

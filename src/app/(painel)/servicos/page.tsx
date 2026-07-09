@@ -5,6 +5,8 @@ import {
   updateServiceAction,
 } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 function formatCurrency(valueInCents?: number | null) {
   if (!valueInCents) {
     return "Não informado";

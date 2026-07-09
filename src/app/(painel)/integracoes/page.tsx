@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { updateIntegrationAction } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 const integrationItems = [
   {
     provider: "chatwoot",
